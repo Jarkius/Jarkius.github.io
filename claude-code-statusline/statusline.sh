@@ -151,7 +151,7 @@ api_str=""
 api_ms=$(echo "$input" | jq -r '.cost.total_api_duration_ms // empty')
 if [ -n "$api_ms" ] && [ -n "$dur_ms" ] && [ "${dur_ms%.*}" -gt 0 ] 2>/dev/null; then
   api_pct=$(( ${api_ms%.*} * 100 / ${dur_ms%.*} ))
-  api_str="⚡$(fmt_ms "$api_ms") (${api_pct}%)"
+  api_str="⚡ $(fmt_ms "$api_ms") (${api_pct}%)"
 fi
 
 # --- Mode flags: effort, fast mode, thinking off, output style, 200k+ ---
@@ -230,7 +230,7 @@ worktree_name=$(echo "$input" | jq -r '.worktree.name // empty')
 worktree_branch=$(echo "$input" | jq -r '.worktree.branch // empty')
 worktree_str=""
 if [ -n "$worktree_name" ]; then
-  worktree_str="🗂${worktree_name}"
+  worktree_str="🗂 ${worktree_name}"
   [ -n "$worktree_branch" ] && worktree_str="${worktree_str}(${worktree_branch})"
 fi
 
@@ -249,10 +249,10 @@ if [ -n "$pr_num" ]; then
     pending)           pr_icon="🕒" ;;
     *)                 pr_icon="🔀" ;;
   esac
-  pr_str="${pr_icon}${pr_prefix}${pr_num}"
+  pr_str="${pr_icon} ${pr_prefix}${pr_num}"
 fi
 
-# === LINE 1: git branch (with branch icon), status, PR badge, worktree, remote repo (clickable), directory (clickable) ===
+# === LINE 1: project name, remote repo (clickable), directory (clickable) ===
 remote_url=$(git -C "$dir" remote get-url origin 2>/dev/null | sed -E 's|.*github\.com[:/]||; s|\.git$||')
 remote_http=""
 [ -n "$remote_url" ] && remote_http="https://github.com/${remote_url}"
@@ -262,49 +262,49 @@ link_start=$'\e]8;;'
 link_end=$'\e]8;;\a'
 bell=$'\a'
 
-out="${BLU}📁${proj}${RST}"
-if [ -n "$branch" ]; then
-  out="${out} ${GRN}🌿${branch}${RST} ${git_dirty}"
-  [ -n "$ab_str" ] && out="${out} ${YLW}${ab_str}${RST}"
-else
-  out="${out} ${GRN}🌿${RST}"
-fi
-
-[ -n "$pr_str" ] && out="${out} ${pr_str}"
-[ -n "$worktree_str" ] && out="${out} ${LAV}${worktree_str}${RST}"
-
-if [ -n "$remote_url" ]; then
-  out="${out} ${YLW}${link_start}${remote_http}${bell}📦${remote_url}${link_end}${RST}"
-fi
-
-out="${out} ${BLU}${link_start}file://${dir}${bell}📂${dir}${link_end}${RST}"
-
-# === LINE 2: time, duration, model, flags, subagent, vim mode ===
-out2="${DGRN}🕐${current_time}${RST}"
-[ -n "$duration" ] && out2="${out2} ${CYN}⏱ ${duration}${RST}"
-out2="${out2} ${warn_icon}${MAG}🤖${model}${RST}"
-[ -n "$flags" ] && out2="${out2}${LAV}${flags}${RST}"
-[ -n "$agent_name" ] && out2="${out2} ${LAV}🧩${agent_name}${RST}"
-[ -n "$vim_str" ] && out2="${out2} ${vim_str}"
-
-# === LINE 3: context bar, pct, tokens ===
-out3="${MAG}📊${RST} ${CYN}[${RST}${bar_color}${bar}${RST}${CYN}]${RST} ${pct_color}${pct_int}%${RST} ${MAG}${used_k}k/${mk}k${RST}"
-
-# === LINE 4: rate limits ===
-out4="${ORG}🔥${RST}"
-[ -n "$rate_str" ] && out4="${out4} ${ORG}${rate_str}${RST}"
-
-# === LINE 5: cost, turns, lines changed, API-time share, session name ===
-out5="${GRN}📈${RST}"
-[ -n "$cost" ] && out5="${out5} ${GRN}💰${cost}${RST}"
-[ -n "$turns" ] && out5="${out5} ${CYN}💬${turns}${RST}"
-[ -n "$lines_str" ] && out5="${out5} ${GRN}✏${lines_str}${RST}"
-[ -n "$api_str" ] && out5="${out5} ${CYN}${api_str}${RST}"
+out="${BLU}📁 ${proj}${RST}"
 # Truncate long session names so the line doesn't wrap in split panes
 if [ -n "$session_name" ] && [ "${#session_name}" -gt 24 ]; then
   session_name="${session_name:0:22}.."
 fi
-[ -n "$session_name" ] && out5="${out5} ${LAV}📝${session_name}${RST}"
+[ -n "$session_name" ] && out="${out} ${LAV}📝 ${session_name}${RST}"
+
+# === LINE 2: git branch, status, ahead/behind, PR badge, worktree, remote repo (clickable), directory (clickable) ===
+out2=""
+if [ -n "$branch" ]; then
+  out2="${GRN}🌿 ${branch}${RST} ${git_dirty}"
+  [ -n "$ab_str" ] && out2="${out2} ${YLW}${ab_str}${RST}"
+else
+  out2="${GRN}🌿 ${RST}"
+fi
+[ -n "$pr_str" ] && out2="${out2} ${pr_str}"
+if [ -n "$remote_url" ]; then
+  out2="${out2} ${YLW}${link_start}${remote_http}${bell}📦 ${remote_url}${link_end}${RST}"
+fi
+out2="${out2} ${BLU}${link_start}file://${dir}${bell}📂 ${dir}${link_end}${RST}"
+[ -n "$worktree_str" ] && out2="${out2} ${LAV}${worktree_str}${RST}"
+
+# === LINE 3: time, duration, model, flags, subagent, vim mode ===
+out3="${DGRN}🕐 ${current_time}${RST}"
+[ -n "$duration" ] && out3="${out3} ${CYN}⏱ ${duration}${RST}"
+out3="${out3} ${warn_icon}${MAG}🤖 ${model}${RST}"
+[ -n "$flags" ] && out3="${out3}${LAV}${flags}${RST}"
+[ -n "$agent_name" ] && out3="${out3} ${LAV}🧩 ${agent_name}${RST}"
+[ -n "$vim_str" ] && out3="${out3} ${vim_str}"
+
+# === LINE 4: context bar, pct, tokens ===
+out4="${MAG}📊${RST} ${CYN}[${RST}${bar_color}${bar}${RST}${CYN}]${RST} ${pct_color}${pct_int}%${RST} ${MAG}${used_k}k/${mk}k${RST}"
+
+# === LINE 5: rate limits ===
+out5="${ORG}🔥${RST}"
+[ -n "$rate_str" ] && out5="${out5} ${ORG}${rate_str}${RST}"
+
+# === LINE 6: cost, turns, lines changed, API-time share, session name ===
+out6="${GRN}📈${RST}"
+[ -n "$cost" ] && out6="${out6} ${GRN}💰 ${cost}${RST}"
+[ -n "$turns" ] && out6="${out6} ${CYN}💬 ${turns}${RST}"
+[ -n "$lines_str" ] && out6="${out6} ${GRN}✏ ${lines_str}${RST}"
+[ -n "$api_str" ] && out6="${out6} ${CYN}${api_str}${RST}"
 
 # Print line 1
 echo "$out"
@@ -315,8 +315,11 @@ echo "$out2"
 # Print line 3
 echo "$out3"
 
-# Print line 4 (only when rate-limit data is present, e.g. Claude.ai subscription)
-[ -n "$rate_str" ] && echo "$out4"
+# Print line 4
+echo "$out4"
 
-# Print line 5
-echo "$out5"
+# Print line 5 (only when rate-limit data is present, e.g. Claude.ai subscription)
+[ -n "$rate_str" ] && echo "$out5"
+
+# Print line 6
+echo "$out6"

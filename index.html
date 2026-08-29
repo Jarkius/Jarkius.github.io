@@ -85,26 +85,29 @@
 <main>
 
   <div class="card">
-    <h2>Claude Code Statusline — 5-line Dashboard</h2>
+    <h2>Claude Code Statusline — 6-line Dashboard</h2>
     <p>A <code class="inline">statusLine</code> command script for
       <a href="https://docs.claude.com/en/docs/claude-code" target="_blank">Claude Code</a>
-      that spreads session info across 5 lines instead of cramming it into one, so nothing
-      gets truncated in narrow panes.</p>
+      that spreads session info across 6 lines instead of cramming it into one, so nothing
+      gets truncated in narrow panes. Every line leads with a fixed icon, and lines with no
+      data (like rate limits outside a Claude.ai subscription) are omitted entirely.</p>
 
-    <div class="term">📁wakeup-call-youtube <span style="color:#3fb950">🌿main</span> <span style="color:#3fb950">✓</span> 📦Jarkius/wakeup-call-youtube 📂/Users/jarkius/workspace/dev/wakeup-call-youtube
-<span style="color:#79c0ff">🕐12:08:10</span> ⏱ 16m 🤖Sonnet 5 🧠high 🧩code-architect
+    <div class="term">📁 wakeup-call-youtube 📝 statusline-multiline
+<span style="color:#3fb950">🌿 main</span> <span style="color:#3fb950">●</span> ✅ #42 📦 Jarkius/wakeup-call-youtube 📂 /Users/jarkius/workspace/dev/wakeup-call-youtube
+<span style="color:#79c0ff">🕐 12:23:19</span> ⏱ 12m 🤖 Claude Sonnet 5 🧠high
 📊 [<span style="color:#3fb950">██████</span>░░░░░░░░░░░░░░] 30% 60k/200k
-🔥 5h:30%(↻8h11m) 7d:12%
-📈 💰$0.42 💬5 ✏+20/-3 ⚡5m (39%) 📝my-session</div>
+🔥 5h:30%(↻7h36m) 7d:12%
+📈 💰 $0.42 💬 5 ✏ +20/-3 ⚡ 5m (39%)</div>
 
     <h3>What each line shows</h3>
     <table>
       <tr><th>Line</th><th>Icon</th><th>Contents</th></tr>
-      <tr><td>1</td><td>📁 🌿</td><td>Project name, git branch, dirty status, ahead/behind, PR badge, worktree, clickable repo + directory links</td></tr>
-      <tr><td>2</td><td>🕐</td><td>Time, session duration, model, effort/mode flags, active subagent name, vim mode</td></tr>
-      <tr><td>3</td><td>📊</td><td>Context window usage bar, percentage, tokens used / max</td></tr>
-      <tr><td>4</td><td>🔥</td><td>5-hour and 7-day rate-limit usage with reset countdown (Claude.ai subscribers only — omitted entirely otherwise)</td></tr>
-      <tr><td>5</td><td>📈</td><td>Session cost, turn count, lines changed, API-time share, session name</td></tr>
+      <tr><td>1</td><td>📁</td><td>Project name, session name (set via <code class="inline">/rename</code>)</td></tr>
+      <tr><td>2</td><td>🌿</td><td>Git branch, dirty status, ahead/behind, PR/MR badge, worktree name, clickable repo + directory links</td></tr>
+      <tr><td>3</td><td>🕐</td><td>Time, session duration, model, effort/mode flags, active subagent name, vim mode</td></tr>
+      <tr><td>4</td><td>📊</td><td>Context window usage bar, percentage, tokens used / max</td></tr>
+      <tr><td>5</td><td>🔥</td><td>5-hour and 7-day rate-limit usage with reset countdown (Claude.ai subscribers only — line omitted otherwise)</td></tr>
+      <tr><td>6</td><td>📈</td><td>Session cost, turn count, lines changed, API-time share</td></tr>
     </table>
 
     <h3>Setup</h3>
