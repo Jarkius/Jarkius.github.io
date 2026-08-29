@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jarkius — dev notes</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --panel: #161b22;
+    --border: #30363d;
+    --text: #c9d1d9;
+    --muted: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+  }
+  header {
+    padding: 3rem 1.5rem 1.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  header h1 { margin: 0 0 0.25rem; font-size: 1.8rem; }
+  header p { color: var(--muted); margin: 0; }
+  main { max-width: 800px; margin: 0 auto; padding: 0 1.5rem 4rem; }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .card h2 { margin-top: 0; font-size: 1.2rem; }
+  .term {
+    background: #010409;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.85rem;
+    overflow-x: auto;
+    white-space: pre;
+    line-height: 1.5;
+  }
+  pre.code {
+    background: #010409;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    overflow-x: auto;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.82rem;
+  }
+  code.inline {
+    background: #010409;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.1rem 0.35rem;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.85em;
+  }
+  ol, ul { padding-left: 1.3rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 0.4rem 0.6rem; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 600; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  footer { text-align: center; color: var(--muted); font-size: 0.85rem; padding-bottom: 3rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Jarkius</h1>
+  <p>Dev notes and small tools. First up: a multi-line Claude Code statusline.</p>
+</header>
+
+<main>
+
+  <div class="card">
+    <h2>Claude Code Statusline — 5-line Dashboard</h2>
+    <p>A <code class="inline">statusLine</code> command script for
+      <a href="https://docs.claude.com/en/docs/claude-code" target="_blank">Claude Code</a>
+      that spreads session info across 5 lines instead of cramming it into one, so nothing
+      gets truncated in narrow panes.</p>
+
+    <div class="term">📁wakeup-call-youtube <span style="color:#3fb950">🌿main</span> <span style="color:#3fb950">✓</span> 📦Jarkius/wakeup-call-youtube 📂/Users/jarkius/workspace/dev/wakeup-call-youtube
+<span style="color:#79c0ff">🕐12:08:10</span> ⏱ 16m 🤖Sonnet 5 🧠high 🧩code-architect
+📊 [<span style="color:#3fb950">██████</span>░░░░░░░░░░░░░░] 30% 60k/200k
+🔥 5h:30%(↻8h11m) 7d:12%
+📈 💰$0.42 💬5 ✏+20/-3 ⚡5m (39%) 📝my-session</div>
+
+    <h3>What each line shows</h3>
+    <table>
+      <tr><th>Line</th><th>Icon</th><th>Contents</th></tr>
+      <tr><td>1</td><td>📁 🌿</td><td>Project name, git branch, dirty status, ahead/behind, PR badge, worktree, clickable repo + directory links</td></tr>
+      <tr><td>2</td><td>🕐</td><td>Time, session duration, model, effort/mode flags, active subagent name, vim mode</td></tr>
+      <tr><td>3</td><td>📊</td><td>Context window usage bar, percentage, tokens used / max</td></tr>
+      <tr><td>4</td><td>🔥</td><td>5-hour and 7-day rate-limit usage with reset countdown (Claude.ai subscribers only — omitted entirely otherwise)</td></tr>
+      <tr><td>5</td><td>📈</td><td>Session cost, turn count, lines changed, API-time share, session name</td></tr>
+    </table>
+
+    <h3>Setup</h3>
+    <ol>
+      <li>Save the script to <code class="inline">~/.claude/statusline.sh</code> and <code class="inline">chmod +x</code> it.</li>
+      <li>Point Claude Code at it in <code class="inline">~/.claude/settings.json</code>:
+        <pre class="code">{
+  "statusLine": {
+    "type": "command",
+    "command": "/Users/you/.claude/statusline.sh"
+  }
+}</pre>
+      </li>
+      <li>Requires <code class="inline">jq</code> and <code class="inline">bc</code> (<code class="inline">brew install jq bc</code> on macOS — <code class="inline">bc</code> is usually preinstalled).</li>
+    </ol>
+
+    <p>
+      <a href="claude-code-statusline/statusline.sh">View the script →</a>
+    </p>
+  </div>
+
+</main>
+
+<footer>
+  Built with Claude Code.
+</footer>
+
+</body>
+</html>
