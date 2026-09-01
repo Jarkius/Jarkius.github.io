@@ -72,6 +72,23 @@
     padding: 0.2rem 0 0.2rem 1rem;
     color: var(--muted);
   }
+  pre.code {
+    background: #010409;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    overflow-x: auto;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.82rem;
+    white-space: pre-wrap;
+  }
+  .prompt-card { margin: 1.2rem 0; }
+  .prompt-card h4 {
+    margin: 0 0 0.5rem;
+    font-size: 0.95rem;
+    color: var(--muted);
+    font-weight: 600;
+  }
   a { color: var(--accent); text-decoration: none; }
   a:hover { text-decoration: underline; }
   footer { text-align: center; color: var(--muted); font-size: 0.85rem; padding: 2rem 0 3rem; }
@@ -152,6 +169,54 @@
 <p>สองอันนี้ไม่เหมือนกัน — "อัปเดตไฟล์" ไม่เท่ากับ "ยืนยันแล้ว" การเขียนว่า "step X เสร็จแล้ว" ในไฟล์ ไม่ได้แปลว่ามันเสร็จจริง ถ้าไม่มีใครรันอะไรยืนยัน</p>
 
 <p>อีกส่วนที่ช่วยมากคือ <strong>decisions log แบบ append-only</strong> ในตัว <code class="inline">SOT.md</code> — บันทึกเฉพาะการตัดสินใจที่ reverse ยาก, surprising ถ้าไม่มีบริบท, หรือมี trade-off จริง (แนวคิดคล้าย ADR แต่เบากว่า) ไม่ใช่ทุกการตัดสินใจเล็กๆ ถูกจดหมด — งานประจำวันไม่ต้องมี ไม่งั้นไฟล์จะบวมจนไม่มีใครอ่าน</p>
+
+<h2>ลองเลย — prompt ที่หยิบไปวางได้ทันที</h2>
+
+<p>เขียนกฎลอยๆ อ่านเข้าใจแต่ไม่รู้จะเริ่มสั่งยังไง เอา 4 prompt นี้ไปวางในแชทได้เลย ปรับชื่อไฟล์/โปรเจกต์ตามจริง ที่เหลือ agent จัดการเอง</p>
+
+<div class="prompt-card card">
+  <h4>1) เริ่มโปรเจกต์ใหม่ — ให้ agent สร้างไฟล์ตั้งต้นให้</h4>
+<pre class="code">สร้างไฟล์ตั้งต้นสำหรับโปรเจกต์นี้ 3 ไฟล์: PROJECT.md, AGENTS.md, SOT.md
+
+PROJECT.md ให้บอกว่าโปรเจกต์นี้ทำอะไร, scope ที่ทำ (in scope) และ
+ที่ไม่ทำ (out of scope) อย่างชัดเจน — ถามฉันถ้าข้อมูลไม่พอ อย่าเดา
+
+AGENTS.md ให้เป็นกฎที่ agent ต้องทำตามทุกครั้ง ห้ามต่อรอง เช่น
+ไฟล์/โฟลเดอร์ที่ห้ามแตะ, ขั้นตอนที่ต้องทำตามลำดับ, และสิ่งที่ต้อง
+"fail closed" (หยุดแล้วถามฉัน) แทนการเดา
+
+SOT.md ให้มีช่อง "Last updated", "Last verified" (ว่างไว้ก่อน),
+สถานะงานตอนนี้, blocker ที่ยังค้าง, และ next action — เขียนสั้นๆ
+เท่าที่รู้ตอนนี้ ไม่ต้องเดาสิ่งที่ยังไม่เกิด</pre>
+</div>
+
+<div class="prompt-card card">
+  <h4>2) เปิด session ใหม่ในโปรเจกต์เดิม — ไม่ต้องเล่าบริบทซ้ำ</h4>
+<pre class="code">อ่าน PROJECT.md, AGENTS.md, และ SOT.md ในโปรเจกต์นี้ก่อน
+แล้วสรุปให้ฉันฟังสั้นๆ ว่าตอนนี้อยู่ตรงไหน มี blocker อะไรบ้าง
+แล้วทำ [ระบุงานที่ต้องการ เช่น "phase ถัดไปตาม ROADMAP"] ต่อ</pre>
+</div>
+
+<div class="prompt-card card">
+  <h4>3) จบงาน / ปิด session — บังคับให้อัปเดตไฟล์ก่อนเลิก</h4>
+<pre class="code">ก่อนจบงานนี้ อัปเดต SOT.md ให้ตรงกับความจริงตอนนี้:
+- อัปเดต "Last updated" เป็นวันนี้
+- ถ้าได้รันเทส/ตรวจสอบจริงแล้วผ่าน ให้อัปเดต "Last verified" ด้วย —
+  ถ้าไม่ได้รันอะไรจริง ห้ามแก้ช่องนี้
+- อัปเดตสถานะงาน/blocker/next action ให้ตรงกับสิ่งที่เพิ่งทำ
+- ถ้ามีการตัดสินใจที่กลับยาก หรือ surprising ถ้าไม่มีบริบท
+  ให้เพิ่มลง decisions log ด้วยหนึ่งบรรทัด พร้อมเหตุผลสั้นๆ</pre>
+</div>
+
+<div class="prompt-card card">
+  <h4>4) เพิ่งตกลงกฎใหม่กลางแชท — ย้ายลงไฟล์ก่อนลืม</h4>
+<pre class="code">ข้อตกลงที่เราคุยกันเมื่อกี้ — [สรุปสั้นๆ ว่าตกลงอะไร] —
+ย้ายไปเขียนลง AGENTS.md (ถ้าเป็นกฎห้ามทำ/ต้องทำ) หรือ SOT.md
+(ถ้าเป็นการตัดสินใจเฉพาะจุดในโปรเจกต์นี้) ให้ถูกที่ อย่าปล่อยให้
+อยู่แค่ในแชท</pre>
+</div>
+
+<p>เคล็ดลับ: prompt กลุ่ม 2–3 คือคู่ที่ใช้บ่อยสุด — เปิด session ด้วย (2), ปิดด้วย (3) ทำแบบนี้ทุกรอบ แชทจะไม่มีทางยาวจนของหลุดออกนอก context window เพราะไม่มีอะไรสำคัญค้างอยู่ในแชทให้หลุดตั้งแต่แรก</p>
 
 <h2>Pro / Con</h2>
 
