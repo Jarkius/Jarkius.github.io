@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>แชทไม่ใช่ที่เก็บความจริง — Jarkius</title>
+<meta name="description" content="ทำไม AI agent ถึงลืมข้อตกลงกลางแชท และวิธีแก้ด้วยไฟล์ธรรมดาในโปรเจกต์ — PROJECT.md, AGENTS.md, SOT.md, ROADMAP.md">
+<style>
+  :root {
+    --bg: #0d1117;
+    --panel: #161b22;
+    --border: #30363d;
+    --text: #c9d1d9;
+    --muted: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    line-height: 1.7;
+  }
+  header {
+    padding: 3rem 1.5rem 1.5rem;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  header a.back { color: var(--muted); text-decoration: none; font-size: 0.85rem; }
+  header a.back:hover { text-decoration: underline; }
+  header h1 { margin: 1rem 0 0.5rem; font-size: 1.7rem; line-height: 1.4; }
+  header p.meta { color: var(--muted); margin: 0; font-size: 0.9rem; }
+  main { max-width: 720px; margin: 0 auto; padding: 0 1.5rem 4rem; }
+  article > p { margin: 1.1rem 0; }
+  article h2 {
+    margin: 2.5rem 0 1rem;
+    font-size: 1.3rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.5rem;
+  }
+  article h3 { margin: 1.8rem 0 0.8rem; font-size: 1.05rem; color: var(--accent); }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+  }
+  .card h3 { margin-top: 0; }
+  ul.filelist { list-style: none; padding-left: 0; }
+  ul.filelist li { margin: 0.6rem 0; padding-left: 1.2rem; border-left: 2px solid var(--border); }
+  ol, ul { padding-left: 1.3rem; }
+  li { margin: 0.4rem 0; }
+  code.inline {
+    background: #010409;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.1rem 0.35rem;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.85em;
+  }
+  .procon { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+  @media (min-width: 640px) { .procon { grid-template-columns: 1fr 1fr; } }
+  .procon .card h3 { font-size: 1rem; }
+  .procon .pro h3 { color: var(--green); }
+  .procon .con h3 { color: #f0883e; }
+  blockquote {
+    border-left: 3px solid var(--accent);
+    margin: 1.2rem 0;
+    padding: 0.2rem 0 0.2rem 1rem;
+    color: var(--muted);
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  footer { text-align: center; color: var(--muted); font-size: 0.85rem; padding: 2rem 0 3rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="back" href="../../index.html">← กลับหน้าแรก</a>
+  <h1>แชทไม่ใช่ที่เก็บความจริง: ทำไม AI agent ของคุณถึงลืม (และวิธีแก้ด้วยไฟล์ธรรมดา)</h1>
+  <p class="meta">1 กันยายน 2026 · dev notes</p>
+</header>
+
+<main>
+<article>
+
+<p>ผมเคยเชื่อว่าเอาทุกอย่างยัดใส่ AI ครั้งเดียวแล้วมันจะทำได้หมด — เจ็บมาก่อนถึงเลิกเชื่อ</p>
+
+<p>โพสต์นี้เขียนไว้เตือนความจำตัวเองเป็นหลัก ไม่มีอะไรจะขาย ใครเคยผ่านเคสแบบนี้คงแอบยิ้มมุมปาก 😆</p>
+
+<h2>What — ปัญหาคืออะไร</h2>
+
+<p>สมัยก่อนผมสั่งงาน AI agent แบบนี้: เปิดแชทขึ้นมา แล้วเทกองทุกอย่างลงไปในครั้งเดียว — บริบทโปรเจกต์ สเปก ข้อห้าม ของที่ชอบ ของที่เกลียด ยัดยาวเป็นพืด กะเอาให้ครบทุกอณู แล้วหวังในใจว่ามันอ่านจบแล้วจะทำได้ครบทุกจุด เพราะพิมพ์ให้ครบแล้วนี่หว่า คงจะไม่พลาดหรอก</p>
+
+<p>ผลคือไม่เคยเป็นแบบนั้น ช่วงแรกมันตอบดี แต่พอคุยไปเรื่อยๆ งานเริ่มแปลก มันทำของที่สั่งห้ามไปแล้ว แก้ไฟล์ที่บอกไปแล้วว่าห้ามแตะ บางทีก็ย้อนกลับไปใช้แนวทางเก่าที่เพิ่งตกลงกันว่าไม่เอาแล้ว — แบบไม่รู้ตัวเลย</p>
+
+<p>ตอนนั้นผมโทษโมเดล เปลี่ยนโมเดล เปลี่ยน tool เขียน prompt ใหม่ให้สวยขึ้น ไม่มีอะไรแก้จริงสักอย่าง เพราะตัวปัญหาไม่ใช่โมเดล — ปัญหาคือผมเก็บความจริงทั้งโปรเจกต์ไว้ใน<strong>กล่องแชท</strong> ซึ่งไม่ใช่ที่เก็บของแต่แรก</p>
+
+<h2>Why — ทำไมมันพัง</h2>
+
+<p>context window มีขอบ (ไม่ว่าโมเดลจะรองรับกี่ 100k–1M ก็ตาม) พอคุยยาวขึ้นเรื่อยๆ ของเก่าก็เริ่มไหลออกนอกหน้าต่าง และตัวที่หายไปก่อนคือ<strong>ข้อตกลงแรกของงานเสมอ</strong> — scope, อะไรทำได้, อะไรห้ามทำ, เป้าหมายจริงคืออะไร</p>
+
+<p>ที่เจ็บที่สุดคือตรงนี้: ตอนที่มันจำไม่ได้ มันไม่หยุดมาถาม มัน<strong>เดา</strong> แล้วตอบด้วยความมั่นใจเต็มร้อย เราก็เชื่อ เพราะมันพูดเหมือนมันรู้เลย</p>
+
+<p>จุดเปลี่ยนคือวันที่ถามตัวเองว่า ถ้าแชทไม่ใช่ที่เก็บของ แล้วอะไรคือที่เก็บของ — คำตอบธรรมดามาก คือ<strong>ไฟล์ในโปรเจกต์</strong> ไฟล์ไม่ลืม ไม่มี context window อ่านซ้ำได้ไม่จำกัด และอยู่กับ repo ตลอดไป ไม่ว่าจะเปิดรอบใหม่ เปลี่ยนโมเดล เปลี่ยน agent หรือส่งต่อให้คนอื่นทำต่อ</p>
+
+<blockquote>แชทคือที่สั่งงาน ไฟล์คือความจริงและกติกากลาง ความจริงห้ามอาศัยอยู่ในแชทเด็ดขาด</blockquote>
+
+<h2>How — โครงที่ใช้จริง</h2>
+
+<p>โครงนี้ไม่ได้ออกแบบเสร็จในหัวรอบเดียว มันคือผลของการงัดแงะ เจอปัญหา ลองผิดหลายสิบรอบ ใครอ่านแล้วรู้สึกว่าตัวเองไม่เก่งพอจะทำแบบนี้ ผมยืนยันได้เลยว่าไม่เก่งครับ แค่ถามเยอะและลองเยอะพอสมควร</p>
+
+<p>ไฟล์ที่ติดมากับทุกโปรเจกต์ตอนนี้ (ไม่ต้องทำครบตั้งแต่วันแรก):</p>
+
+<ul class="filelist">
+  <li><code class="inline">PROJECT.md</code> — บอกว่ากำลังทำอะไร และอะไรไม่ใช่งานนี้ (scope, in/out)</li>
+  <li><code class="inline">AGENTS.md</code> — บอกว่า agent ทำอะไรได้ / ห้ามทำอะไร (hard constraints, ไม่ต่อรอง)</li>
+  <li><code class="inline">SOT.md</code> (Source of Truth) — บอกว่าความจริงล่าสุดของโปรเจกต์คืออะไร <em>ตอนนี้</em> ไม่ใช่แผน</li>
+  <li><code class="inline">ROADMAP.md</code> — บอกว่ากำลังอยู่ตรงไหน และจะไปไหนต่อ (แผนใหญ่ ไม่ใช่สถานะปัจจุบัน)</li>
+  <li><code class="inline">UX.md</code> — บอกว่าผลลัพธ์หรือหน้าตาควรเป็นแบบไหน (ถ้างานมีหน้าตาให้ต้องดูถูก)</li>
+  <li><code class="inline">graft/</code> หรือ architecture doc — แผนที่ว่าโค้ดอยู่ตรงไหน เชื่อมอะไรกับอะไร</li>
+</ul>
+
+<p>ทั้งหมดทำงานร่วมกัน — ขาดตัวไหนไป agent ต้องเดาในช่องนั้น และที่ที่มันเดา คือที่ที่งานเริ่มหลุด</p>
+
+<p>เจอมาหมดแล้ว: ไม่มี <code class="inline">PROJECT</code> → งานคลาด scope. ไม่มี <code class="inline">AGENTS</code> → มันแตะของที่ห้ามแตะ. ไม่มี <code class="inline">SOT</code> → ทำซ้ำของเก่า. ไม่มี <code class="inline">ROADMAP</code> → ลำดับงานพัง. ไม่มี <code class="inline">UX</code> → ของที่ได้มาไม่ใช่ที่ในหัว. ไม่มี architecture map → แก้โค้ดผิดไฟล์</p>
+
+<h3>วงจรที่วิ่งอยู่ทุกวัน</h3>
+
+<ol>
+  <li>สั่งในแชทสั้นๆ เช่น "ทำ phase ถัดไปตาม ROADMAP" ไม่ต้องเล่าบริบทแล้ว เพราะบริบทอยู่ในไฟล์</li>
+  <li>agent ไปอ่านไฟล์เหล่านี้เองก่อนเริ่มทุกงาน</li>
+  <li>ลงมือทำตาม scope ที่ล็อกไว้</li>
+  <li>จบงาน อัปเดต <code class="inline">SOT.md</code> + <code class="inline">ROADMAP.md</code> ก่อนปิด ทุกครั้ง</li>
+  <li>ข้อตกลงใหม่ที่คุยกันในแชท ย้ายลงไฟล์ทันที ไม่ปล่อยให้ลอยอยู่ในแชท</li>
+  <li>จบรอบ แชทหมดหน้าที่ เปิดใหม่ก็เริ่มจากไฟล์ ไม่ต้องเล่าอะไรอีก</li>
+</ol>
+
+<h3>รายละเอียดที่มักถูกมองข้าม — SOT.md ต้องมี timestamp</h3>
+
+<p>ไฟล์ที่บอก "สถานะปัจจุบัน" โดยไม่มีวันที่ประทับไว้ คือไฟล์ที่ไว้ใจไม่ได้ตั้งแต่บรรทัดแรก เพราะไม่มีทางรู้ว่ามันเก่าไปหรือยัง สิ่งที่ควรมีคือ:</p>
+
+<ul>
+  <li><code class="inline">Last updated</code> — วันที่ล่าสุดที่แก้ไขไฟล์นี้</li>
+  <li><code class="inline">Last verified</code> — วันที่ล่าสุดที่<em>รันจริง</em> (test, type-check ฯลฯ) แล้วยืนยันว่าสถานะที่บันทึกไว้ยังจริงอยู่</li>
+</ul>
+
+<p>สองอันนี้ไม่เหมือนกัน — "อัปเดตไฟล์" ไม่เท่ากับ "ยืนยันแล้ว" การเขียนว่า "step X เสร็จแล้ว" ในไฟล์ ไม่ได้แปลว่ามันเสร็จจริง ถ้าไม่มีใครรันอะไรยืนยัน</p>
+
+<p>อีกส่วนที่ช่วยมากคือ <strong>decisions log แบบ append-only</strong> ในตัว <code class="inline">SOT.md</code> — บันทึกเฉพาะการตัดสินใจที่ reverse ยาก, surprising ถ้าไม่มีบริบท, หรือมี trade-off จริง (แนวคิดคล้าย ADR แต่เบากว่า) ไม่ใช่ทุกการตัดสินใจเล็กๆ ถูกจดหมด — งานประจำวันไม่ต้องมี ไม่งั้นไฟล์จะบวมจนไม่มีใครอ่าน</p>
+
+<h2>Pro / Con</h2>
+
+<div class="procon">
+  <div class="card pro">
+    <h3>ข้อดี</h3>
+    <ul>
+      <li>แชทสั้นลงมาก งานส่วนใหญ่สั่งจบใน 2–3 ประโยค</li>
+      <li>เปลี่ยนโมเดล เปลี่ยน agent เปลี่ยนเครื่อง ทำงานต่อได้เหมือนเดิม เพราะความจริงอยู่ใน repo ไม่ได้อยู่ในกล่องแชทของใคร</li>
+      <li>โมเดลจำแม่นขึ้นเอง — ไม่ใช่เพราะโมเดลฉลาดขึ้น แต่เพราะสิ่งที่มันต้องจำในแชทน้อยลง</li>
+      <li>ส่งต่องานให้คนอื่น (หรือ agent ตัวอื่น) ทำต่อได้ทันที ไม่ต้องเล่าซ้ำ</li>
+    </ul>
+  </div>
+  <div class="card con">
+    <h3>ข้อเสีย / สิ่งที่ต้องระวัง</h3>
+    <ul>
+      <li>มี overhead — ต้องคอยอัปเดตไฟล์จริงๆ ถ้าไม่อัปเดต ไฟล์จะโกหกและแย่กว่าไม่มีไฟล์เลย เพราะดูน่าเชื่อถือแต่ผิด</li>
+      <li>ไฟล์หลายไฟล์เสี่ยง<strong>ขัดแย้งกันเอง</strong> ถ้าไม่มีตัวไหนถูกกำหนดให้ "ชนะ" ชัดเจน (นี่คือเหตุผลที่ <code class="inline">SOT.md</code> ต้องมีสถานะที่สุดจริงๆ)</li>
+      <li>ไม่ใช่ทุกโปรเจกต์ต้องมีครบ 6 ไฟล์ — โปรเจกต์เล็กๆ อาจมีแค่ 2–3 ไฟล์ก็พอ การยัดไฟล์เยอะเกินจำเป็นก็คือการ "เทกองลงแชท" แบบเดียวกัน แค่ย้ายที่เทกอง</li>
+      <li>ต้องมีคนคอยตัดสินว่าอะไรควรอยู่ในไฟล์ (ความจริงที่คงอยู่) กับอะไรควรอยู่ในแชท (task เฉพาะรอบนี้) — เส้นแบ่งนี้ต้องฝึก ไม่ใช่มีสูตรตายตัว</li>
+    </ul>
+  </div>
+</div>
+
+<h2>เคสที่เจ็บจริง (จำได้นั่งซึมไปทั้งวัน)</h2>
+
+<p><strong>แก้ไฟล์ผิดที่</strong> — ให้ agent ปรับฟีเจอร์หนึ่ง คุยกันยาวเกินชั่วโมง งานออกมาดีทุกอย่าง พอเช็คเจอว่ามันแตะไฟล์ config อีกไฟล์ที่ตอนต้นแชทสั่งห้ามไว้เอง มันไม่ได้ดื้อ — มันลืม เพราะข้อความตอนต้นถูกไล่ออกจาก context ไปแล้ว ตอนนั้นโมโหตัวเองมาก เพราะรู้ว่าเป็นความผิดของวิธีสั่ง ไม่ใช่ของมัน ตอนนี้ข้อห้ามพวกนี้อยู่ใน <code class="inline">AGENTS.md</code> ซึ่ง agent อ่านทุกรอบ ไม่มีทางลืม เพราะไม่ได้พึ่งความจำเลย</p>
+
+<p><strong>เปิดรอบใหม่แล้วเล่าไม่ครบ</strong> — งานยาวทำจบในแชทเดียวไม่ไหว เปิดแชทใหม่แล้วนั่งเล่าบริบททั้งหมด เล่าไปก็รู้สึกว่ามันไม่ครบ แต่ไม่รู้ว่าตกอะไร สุดท้าย agent ทำผิดตามที่เล่าผิด ตอนนี้เปิดรอบใหม่บอกแค่ "อ่าน <code class="inline">SOT.md</code> แล้วทำ phase ถัดไปตาม <code class="inline">ROADMAP.md</code>" มันเดินถูกกว่าที่เล่าเองอีก</p>
+
+<p><strong>สร้างของซ้ำกับของที่เสร็จแล้ว</strong> — รอบหนึ่ง agent ทำฟีเจอร์เสร็จสวยงาม รอบถัดไปสั่งงานในแชทใหม่ มันสร้างฟีเจอร์เดิมขึ้นมาใหม่หมด เพราะในแชทใหม่มันไม่รู้ว่าของมีอยู่แล้ว วันที่เห็น diff ก็เซ็งสุดๆ เพราะงานตัวเองโดนทับตอนที่ยังไม่มีใครผิดเลย ตั้งแต่ใช้ <code class="inline">SOT.md</code> จดว่าอะไรเสร็จแล้ว ปัญหานี้หายไป</p>
+
+<h2>Future improvement</h2>
+
+<ul>
+  <li><strong>Memory ระดับ session/agent</strong> — ไฟล์ในโปรเจกต์แก้ปัญหา "ความจริงของโปรเจกต์" ได้ แต่ยังไม่ครอบคลุม "นิสัยการทำงานร่วมกันของฉันกับ agent" (เช่น ชอบ/ไม่ชอบแบบไหน, feedback ที่เคยให้ไปแล้ว) — ส่วนนี้กำลังทดลองทำเป็น memory อีกชั้นแยกจากไฟล์โปรเจกต์</li>
+  <li><strong>Automated staleness check</strong> — อยากมี hook หรือ script ที่เตือนเมื่อ <code class="inline">Last verified</code> ใน <code class="inline">SOT.md</code> เก่าเกินไปเทียบกับ commit ล่าสุด แทนต้องจำเองว่าต้องไปเช็ค</li>
+  <li><strong>Template ที่ generalize ได้</strong> — ตอนนี้แต่ละโปรเจกต์ยังปรับมือทุกครั้ง อยากมี starter template ที่มีไฟล์พวกนี้พร้อมโครงว่างให้ copy แล้วกรอก ไม่ต้องเริ่มจากศูนย์</li>
+</ul>
+
+<h2>ถ้าใครอยากลอง</h2>
+
+<p>ไม่ต้องทำครบ 6 ไฟล์หรอก ผมเองก็ไม่ได้เริ่มครบ วันแรกๆ มีแค่ <code class="inline">PROJECT.md</code> — งานไหนต้องมาลงทะเบียนขึ้นชื่อโปรเจกต์ก่อน</p>
+
+<p>แล้วถ้าวันหนึ่งนั่งคุยแล้วรู้สึกว่า agent เริ่มตอบแปลกๆ ทำของแปลกๆ อย่าเพิ่งโทษโมเดลเลย ลองดูก่อนว่ากำลังเก็บความจริงไว้ที่ไหน มันหาเจอไหม ผมโทษโมเดลอยู่นานมากกว่าจะรู้ตัว</p>
+
+</article>
+</main>
+
+<footer>
+  <a href="../../index.html">← กลับหน้าแรก</a> · Built with Claude Code.
+</footer>
+
+</body>
+</html>
